@@ -1,71 +1,48 @@
 openhab
 =========
 
+## Disclaimer
+**Work In Progress**: This project is currently only a testballon for moving private roles into seperate repos. While the role is already functional, documentation & molecule test are rudimentary / non existent / copy & paste from other roles.  
+-> for the time being use this repo only if you know what you do :-)
 
-Create a dedicated user for git operations, install git & clone your repos.
+
+
 
 ### It will
-* create an non-sudo user {{ git_os_user_name }}
-  * shell restricted to git-shell and without interactive login
-  * provisioned with authorized keys
-  * provisioned with a private key for initial cloning
-  * with restricted SSH access (no-port-forwarding,no-X11-forwarding,no-agent-forwarding,no-pty)
-* add a second user {{ user_name }} without special restrictions to group {{ git_os_user_name }}
-* install and configure git
-* clone specified repos (make sure that the source accepts the private key)
-* deletes the private key after cloning (the idea is that, after initial cloning, your git server should not be able to access your backup source)
+* bla
 
 Role Variables
 --------------
 
 `openhab/defaults/main` contains variables which should be overwritten to customize this role:
 ```yml
-# defaults file for openhab
-#   * additional defaults can be found in the <subrole-name>/defaults folders
-
-# git connections will not be done with the system user but with a dedicated git user
-git_os_user_name: git
-
-# password for the dedicated git user
-# create: 
-#   * create hash: ansible all -i localhost, -m debug -a "msg={{ 'my_secret_password' | password_hash('sha512') }}"
-#   * encrypt hash: ansible-vault encrypt_string --vault-id git@prompt --stdin-name 'git_os_user_password_hash'
-# use in play: ansible-playbook <playbook>.yml --vault-id git@prompt
-git_os_user_password_hash: "{{ 'my_secret_password' | password_hash('sha512') }}"
-
-# The dedicated git user should not be able to use the standard shell, but should be
-# restricted to the git-shell. To get the path to the git shell execute 'which git-shell'
-# on the host.
-git_os_user_shell: /usr/bin/git-shell
-# username for git commits
-git_commit_user_name: link
-# user email for git commits
-git_commit_user_email: link@example.org
-# [optional]
-# private key will be deploy by w.users to /home/git/.ssh/id_rsa
-#   * create private / public key pair: ssh-keygen -o
-#   * make public key available on existing git machine (e.g. a backup machine)
-#   * copy content of the private key file and encrypt it (see {{ git_os_user_password_hash }})
-git_private_key:
-# keys to authorize repo SSH access
-git_authorized_keys: []
-# [optional]
-# git repos on an existing git machine (e.g. a backup machine)
-# example:
-#    - repo: ssh://link@{{ location_subnet }}.xxx/path/to/repo/ansible.git
-#      dest: /home/git/repos/ansible.git
-#      bare: true
-git_repositories: []
+# to be added to the openhab user group
+system_user: link
+# openhab user ID
+openhab_uid: 9001
+# In which root directory would you like to create the openhab folder?
+openhab_home: /opt/docker
+# openHAB config repository [optional]
+# Authentication has to be resolved beforehand, one option would be SSH Key 
+# Authentication.
+# Example: ssh://{{ system_user }}@git.example.com:port/path/to/repo/openhab.git
+openhab_repo:
+# which branch?
+openhab_repo_branch: master
+# should local changes be discarded?
+openhab_repo_force: yes
+# which openHAB version should be pulled from Docker?
+openhab_version: latest
+# Docker container hostname
+openhab_hostname: openhab
+# TimeZone: https://en.wikipedia.org/wiki/List_of_tz_database_time_zones
+openhab_timezone: Europe/Berlin
 ```
 
 Dependencies
 ------------
 
-This role is builds up on `weareinteractive.users` & `weareinteractive.git`. These roles can be installed by executing
-```
-ansible-galaxy install weareinteractive.users
-ansible-galaxy install weareinteractive.git
-```
+
 
 Example Playbook
 ----------------

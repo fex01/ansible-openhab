@@ -1,0 +1,117 @@
+---
+# tasks file for openhab
+
+- name: Debug
+  debug:
+    msg: |
+      openhab_home = {{ openhab_home }}
+      repo = {{ openhab_repo }}
+      version = {{ openhab_version }}
+
+- name: "create user {{ openhab_user }} and add {{ system_user }} to group {{ openhab_user }}"
+  include_role:
+    name: create-service-account
+  vars:
+    uid: "{{ openhab_uid }}"
+    gid: "{{ openhab_uid }}"
+    service_user: "{{ openhab_user }}"
+    create_home: False
+    service: openHAB
+
+- name: "checkout / update openHAB config"
+  git:
+    accept_hostkey: yes
+    dest: "{{ openhab_home }}/openhab"
+    force: "{{ openhab_repo_force }}"
+    key_file: "/home/{{ system_user }}/.ssh/id_rsa"
+    repo: "{{ openhab_repo }}"
+    version: "{{ openhab_repo_branch }}"
+  when: openhab_repo #defaults to false for empty variables 
+
+- name: Create if necessary and set the permissions on the openHAB data folder
+  file:
+    path: "{{ openhab_home }}/openhab"
+    state: directory
+    owner: "{{ openhab_user }}"
+    group: "{{ openhab_user }}"
+    mode: u=rwx,g=rwx,o=rx
+    recurse: yes
+  become: True
+
+# my repo does ignore some folders, so they have to be added manually:
+- name: Create missing folders for repo exists
+  file: 
+    path: "{{ item }}"
+    state: directory
+    owner: "{{ openhab_user }}"
+    group: "{{ openhab_user }}"
+    mode: u=rwx,g=rwx,o=rx
+  loop:
+    - "{{ openhab_home }}/openhab/userdata/cache"
+    - "{{ openhab_home }}/openhab/userdata/logs"
+    - "{{ openhab_home }}/openhab/userdata/persistence"
+    - "{{ openhab_home }}/openhab/userdata/tmp"
+  become: True
+  when: openhab_repo #defaults to false for empty variables 
+
+# In case of a fresh installation (means no repo) the three folders mapped
+# into the container have to exists, to be empty and to be owned by openhab
+- name: Create missing folders for a fresh installation
+  file: 
+    path: "{{ item }}"
+    state: directory
+    owner: "{{ openhab_user }}"
+    group: "{{ openhab_user }}"
+    mode: u=rwx,g=rwx,o=rx
+  loop:
+    - "{{ openhab_home }}/openhab/addons"
+    - "{{ openhab_home }}/openhab/conf"
+    - "{{ openhab_home }}/openhab/userdata"
+  become: True
+  when: not openhab_repo
+
+- name: Change ownership of openHAB configs
+  file:
+    path: "{{ openhab_home }}/openhab"
+    owner: "{{ openhab_user }}"
+    group: "{{ openhab_user }}"
+    recurse: yes
+  become: True
+
+- name: See if config is already present
+  stat:
+    path: "{{ openhab_home }}/openhab/userdata/etc/version.properties"
+  register: conf_present
+
+- name: Check the current version of openHAB
+  shell: grep openhab-distro {{ openhab_home }}/userdata/etc/version.properties | cut -d ' ' -f 4
+  register: old_version
+  when: conf_present.stat.exists
+  changed_when: False
+
+- name: Pull/update the openHAB docker image
+  tags: openhab
+  docker_container:
+    detach: True
+    env:
+      CRYPTO_POLICY: unlimited
+      OPENHAB_HTTP_PORT: "8080"
+      OPENHAB_HTTPS_PORT: "8443"
+      EXTRA_JAVA_OPTS: "-Duser.timezone={{ openhab_timezone }}"
+    hostname: "{{ openhab_hostname }}"
+    image: openhab/openhab:{{ openhab_version }}
+    name: openhab
+    network_mode: host
+    pull: True
+    state: started
+    interactive: yes
+    restart: False
+    restart_policy: always
+    tty: True
+    volumes:
+      - /etc/localtime:/etc/localtime:ro
+      - /etc/timezone:/etc/timezone:ro
+      - "{{ openhab_home }}/openhab/conf:/openhab/conf"
+      - "{{ openhab_home }}/openhab/userdata:/openhab/userdata"
+      - "{{ openhab_home }}/openhab/addons:/openhab/addons"
+  register: openhab_pulled

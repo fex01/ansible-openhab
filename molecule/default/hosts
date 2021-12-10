@@ -1,0 +1,33 @@
+# file: host
+
+[berlin_openhab]
+openhab-molecule
+
+[berlin_raspbian]
+openhab-molecule
+
+[szczecin_openhab]
+openhab-molecule-s
+
+[szczecin_raspbian]
+openhab-molecule-s
+
+# openhab in all locations
+[openhab:children]
+berlin_openhab
+szczecin_openhab
+
+# raspbian installations in all locations
+[raspbian:children]
+berlin_raspbian
+szczecin_raspbian
+
+# everything in szczecin
+[berlin:children]
+berlin_raspbian
+berlin_openhab
+
+# everything in szczecin
+[szczecin:children]
+szczecin_raspbian
+szczecin_openhab

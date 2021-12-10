@@ -1,0 +1,9 @@
+---
+- name: Converge
+  hosts: all
+  debugger: on_failed
+
+  tasks:
+    - name: "Include openhab"
+      include_role:
+        name: "openhab"

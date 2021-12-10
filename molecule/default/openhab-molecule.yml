@@ -1,0 +1,13 @@
+---
+# host_vars file for openhab-molecule
+
+ansible_host: openhab-molecule
+ansible_user: root
+user: "{{ 'test' | password_hash('sha512') }}"
+git_private_key: |+
+  -----BEGIN OPENSSH PRIVATE KEY-----
+  nothing
+  -----END OPENSSH PRIVATE KEY-----
+
+##################################################################
+molecule_test: true

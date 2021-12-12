@@ -38,7 +38,9 @@
     recurse: yes
   become: True
 
-# my repo does ignore some folders, so they have to be added manually:
+# openHAB docker image expects that certain folders exist, otherwise it will not start.
+# Since not all of them have to be versioned they might be missing from your repo, so 
+# lets check and add them:
 - name: Create missing folders for repo exists
   file: 
     path: "{{ item }}"

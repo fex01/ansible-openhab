@@ -1,10 +1,9 @@
 openhab
 =========
 
-## Disclaimer
-**Work In Progress**: While the role is already functional, molecule test are rudimentary / non existent.
-
 This role will set up an openHAB server as Docker container and is heavily inspired by [rkoshak](https://github.com/rkoshak)s post [Ansible Revisited](https://community.openhab.org/t/ansible-revisited/105754) in the [openHAB community](https://community.openhab.org).
+
+**Work In Progress**: While the role is already functional, molecule test are rudimentary / non existent.
 
 
 ### It will

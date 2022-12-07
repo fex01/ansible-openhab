@@ -93,7 +93,7 @@
 
 - name: Pull/update the openHAB docker image
   tags: openhab
-  docker_container:
+  docker_container: 
     detach: True
     env:
       CRYPTO_POLICY: unlimited
@@ -103,6 +103,7 @@
     hostname: "{{ openhab_hostname }}"
     image: openhab/openhab:{{ openhab_version }}
     name: openhab
+    container_default_behavior: compatibility
     network_mode: host
     pull: True
     state: started

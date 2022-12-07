@@ -21,7 +21,7 @@
 - name: "checkout / update openHAB config"
   git:
     accept_hostkey: yes
-    dest: "{{ openhab_home }}/openhab"
+    dest: "{{ openhab_home }}"
     force: "{{ openhab_repo_force }}"
     key_file: "/home/{{ system_user }}/.ssh/id_rsa"
     repo: "{{ openhab_repo }}"
@@ -30,7 +30,7 @@
 
 - name: Create if necessary and set the permissions on the openHAB data folder
   file:
-    path: "{{ openhab_home }}/openhab"
+    path: "{{ openhab_home }}"
     state: directory
     owner: "{{ openhab_user }}"
     group: "{{ openhab_user }}"
@@ -49,10 +49,10 @@
     group: "{{ openhab_user }}"
     mode: u=rwx,g=rwx,o=rx
   loop:
-    - "{{ openhab_home }}/openhab/userdata/cache"
-    - "{{ openhab_home }}/openhab/userdata/logs"
-    - "{{ openhab_home }}/openhab/userdata/persistence"
-    - "{{ openhab_home }}/openhab/userdata/tmp"
+    - "{{ openhab_home }}/userdata/cache"
+    - "{{ openhab_home }}/userdata/logs"
+    - "{{ openhab_home }}/userdata/persistence"
+    - "{{ openhab_home }}/userdata/tmp"
   become: True
   when: openhab_repo #defaults to false for empty variables 
 
@@ -66,15 +66,15 @@
     group: "{{ openhab_user }}"
     mode: u=rwx,g=rwx,o=rx
   loop:
-    - "{{ openhab_home }}/openhab/addons"
-    - "{{ openhab_home }}/openhab/conf"
-    - "{{ openhab_home }}/openhab/userdata"
+    - "{{ openhab_home }}/addons"
+    - "{{ openhab_home }}/conf"
+    - "{{ openhab_home }}/userdata"
   become: True
   when: not openhab_repo
 
 - name: Change ownership of openHAB configs
   file:
-    path: "{{ openhab_home }}/openhab"
+    path: "{{ openhab_home }}"
     owner: "{{ openhab_user }}"
     group: "{{ openhab_user }}"
     recurse: yes
@@ -82,7 +82,7 @@
 
 - name: See if config is already present
   stat:
-    path: "{{ openhab_home }}/openhab/userdata/etc/version.properties"
+    path: "{{ openhab_home }}/userdata/etc/version.properties"
   register: conf_present
 
 - name: Check the current version of openHAB
@@ -113,7 +113,7 @@
     volumes:
       - /etc/localtime:/etc/localtime:ro
       - /etc/timezone:/etc/timezone:ro
-      - "{{ openhab_home }}/openhab/conf:/openhab/conf"
-      - "{{ openhab_home }}/openhab/userdata:/openhab/userdata"
-      - "{{ openhab_home }}/openhab/addons:/openhab/addons"
+      - "{{ openhab_home }}/conf:/openhab/conf"
+      - "{{ openhab_home }}/userdata:/openhab/userdata"
+      - "{{ openhab_home }}/addons:/openhab/addons"
   register: openhab_pulled

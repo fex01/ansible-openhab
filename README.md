@@ -22,8 +22,8 @@ Role Variables
 system_user: link
 # openhab user ID
 openhab_uid: 9001
-# In which root directory would you like to create the openhab folder?
-openhab_home: /opt/docker
+# root directory of openhab data
+openhab_home: /opt/docker/openhab
 # openHAB config repository [optional]
 # Authentication has to be resolved beforehand, one option would be SSH Key 
 # Authentication.
@@ -167,7 +167,7 @@ If you have to setup a server from scratch the following play might give you a h
         path: /home/{{ user_name }}/.bashrc
         block: |
           # on login jump to openhab directory
-          cd {{ openhab_home }}/openhab
+          cd {{ openhab_home }}
 ```
 - the prepare-raspberry role can be found as part of my [ansible-gitserver](https://github.com/fex01/ansible-gitserver) repo
 - *minimize-writes*: a role copied from [rkoshak](https://github.com/rkoshak)s post [Ansible Revisited](https://community.openhab.org/t/ansible-revisited/105754) in the [openHAB community](https://community.openhab.org):

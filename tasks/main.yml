@@ -34,7 +34,7 @@
     state: directory
     owner: "{{ openhab_user }}"
     group: "{{ openhab_user }}"
-    mode: u=rwx,g=rwx,o=rx
+    mode: u=rwX,g=rwX,o=
     recurse: yes
   become: True
 
@@ -47,7 +47,7 @@
     state: directory
     owner: "{{ openhab_user }}"
     group: "{{ openhab_user }}"
-    mode: u=rwx,g=rwx,o=rx
+    mode: u=rwX,g=rwX,o=
   loop:
     - "{{ openhab_home }}/userdata/cache"
     - "{{ openhab_home }}/userdata/logs"
@@ -64,7 +64,7 @@
     state: directory
     owner: "{{ openhab_user }}"
     group: "{{ openhab_user }}"
-    mode: u=rwx,g=rwx,o=rx
+    mode: u=rwX,g=rwX,o=
   loop:
     - "{{ openhab_home }}/addons"
     - "{{ openhab_home }}/conf"

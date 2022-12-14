@@ -5,8 +5,8 @@
 system_user: link
 # openhab user ID
 openhab_uid: 9001
-# In which root directory would you like to create the openhab folder?
-openhab_home: /opt/docker
+# root directory of openhab data
+openhab_home: /opt/docker/openhab
 # openHAB config repository [optional]
 # Authentication has to be resolved beforehand, one option would be SSH Key 
 # Authentication.
